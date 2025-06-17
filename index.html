@@ -111,56 +111,73 @@
   </div>
 
   <script>
-    const prompts = [
-      "Write about a time you realised you were mistaken.",
-      "Write about a lesson you learned the hard way.",
-      "Write about a time you were inappropriately dressed for the occasion.",
-      "Write about something you lost that you’ll never get back.",
-      "Write about a time when you knew you’d done the right thing.",
-      "Write about something you don’t remember.",
-      "Write about your darkest teacher.",
-      "Write about a memory of a physical injury.",
-      "Write about when you know when it was over.",
-      "Write about being loved.",
-      "Write about what you were really thinking.",
-      "Write about how you found your way back.",
-      "Write about the kindness of strangers.",
-      "Write about why you could not do it.",
-      "Write about why you did."
-    ];
+  const prompts = [
+    "Write about a time you realised you were mistaken.",
+    "Write about a lesson you learned the hard way.",
+    "Write about a time you were inappropriately dressed for the occasion.",
+    "Write about something you lost that you’ll never get back.",
+    "Write about a time when you knew you’d done the right thing.",
+    "Write about something you don’t remember.",
+    "Write about your darkest teacher.",
+    "Write about a memory of a physical injury.",
+    "Write about when you know when it was over.",
+    "Write about being loved.",
+    "Write about what you were really thinking.",
+    "Write about how you found your way back.",
+    "Write about the kindness of strangers.",
+    "Write about why you could not do it.",
+    "Write about why you did."
+  ];
 
-    const colors = [
-      "#9AB875", "#B7DCED", "#B8AE7F", "#FFB7C5",
-      "#FFC017", "#C4BBE8", "#D59D4D", "#76A7BF"
-    ];
+  const colors = [
+    "#9AB875", "#B7DCED", "#B8AE7F", "#FFB7C5",
+    "#FFC017", "#C4BBE8", "#D59D4D", "#76A7BF"
+  ];
 
-    function refreshPrompt() {
-      window.location.reload();
-    }
+  function refreshPrompt() {
+    window.location.reload();
+  }
 
-    function randomFromArray(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
+  function randomFromArray(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
 
-    function typeWriter(text, element, delay = 40) {
-      let i = 0;
-      element.innerHTML = "";
-      function type() {
-        if (i < text.length) {
-          element.innerHTML += text.charAt(i);
-          i++;
-          setTimeout(type, delay);
-        }
+  function typeWriter(text, element, delay = 40) {
+    let i = 0;
+    element.innerHTML = "";
+    function type() {
+      if (i < text.length) {
+        element.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(type, delay);
       }
-      type();
     }
+    type();
+  }
 
-    // Initialize on load
-    const prompt = randomFromArray(prompts);
-    const color = randomFromArray(colors);
-    document.body.style.backgroundColor = color;
+  // Load and parse used prompt list from localStorage
+  const usedPrompts = JSON.parse(localStorage.getItem("usedPrompts") || "[]");
+
+  // Determine which prompts are unused
+  const unusedPrompts = prompts.filter(p => !usedPrompts.includes(p));
+
+  // If all prompts have been used, reset
+  if (unusedPrompts.length === 0) {
+    localStorage.setItem("usedPrompts", JSON.stringify([]));
+    location.reload(); // reload to start fresh
+  } else {
+    const selectedPrompt = randomFromArray(unusedPrompts);
+    const selectedColor = randomFromArray(colors);
+
+    // Save updated used prompts list
+    usedPrompts.push(selectedPrompt);
+    localStorage.setItem("usedPrompts", JSON.stringify(usedPrompts));
+
+    // Apply to page
+    document.body.style.backgroundColor = selectedColor;
     const promptElement = document.getElementById("prompt");
-    typeWriter(prompt, promptElement);
-  </script>
+    typeWriter(selectedPrompt, promptElement);
+  }
+</script>
 </body>
 </html>
